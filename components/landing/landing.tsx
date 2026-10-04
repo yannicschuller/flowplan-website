@@ -93,25 +93,64 @@ function useCycle(length: number, ms: number, run: boolean) {
   }, [length, ms, run]);
   return [index, setIndex] as const;
 }
-// Restarts a CSS choreography by remounting it every `ms`.
+const FADE_MS = 450;
+// Replays a CSS choreography every `ms`: it fades out shortly before the end
+// (`ending`), then remounts with a new `round` and fades in again – no cut.
 function useReplay(ms: number, run: boolean) {
-  const [round, setRound] = useState(0);
+  const [round, setRound] = useState(0),
+    [ending, setEnding] = useState(false);
   useEffect(() => {
     if (!run) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const timer = setInterval(() => setRound((r) => r + 1), ms);
-    return () => clearInterval(timer);
+    let fade: ReturnType<typeof setTimeout>, next: ReturnType<typeof setTimeout>;
+    const schedule = () => {
+      fade = setTimeout(() => setEnding(true), ms - FADE_MS);
+      next = setTimeout(() => {
+        setEnding(false);
+        setRound((r) => r + 1);
+        schedule();
+      }, ms);
+    };
+    schedule();
+    return () => {
+      clearTimeout(fade);
+      clearTimeout(next);
+      setEnding(false);
+    };
   }, [ms, run]);
-  return round;
+  return [round, ending] as const;
+}
+// Counts how often each of several scenes became the active one. Used as a
+// key, a scene starts from the beginning whenever it is shown (instead of
+// appearing mid-way or already finished).
+function useStarts(active: number, count: number) {
+  const [starts, setStarts] = useState<number[]>(() => Array.from({ length: count }, (_, i) => (i === active ? 1 : 0)));
+  const [shown, setShown] = useState(active);
+  if (shown !== active) {
+    setShown(active);
+    setStarts(starts.map((n, i) => (i === active ? n + 1 : n)));
+  }
+  return starts;
+}
+// Advances to the next scene once the current one has played through.
+function useSequence(durations: number[], run: boolean) {
+  const [index, setIndex] = useState(0);
+  useEffect(() => {
+    if (!run) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const timer = setTimeout(() => setIndex((i) => (i + 1) % durations.length), durations[index]);
+    return () => clearTimeout(timer);
+  }, [durations, index, run]);
+  return [index, setIndex] as const;
 }
 
 /* ---------- Scenes ---------- */
 
 function DocScene({ run }: { run: boolean }) {
   const c = useCopy().docScene;
-  const round = useReplay(11000, run);
+  const [round, ending] = useReplay(11000, run);
   return (
-    <div className={s.doc} key={round} data-run={run}>
+    <div className={s.doc} key={round} data-run={run} data-ending={ending}>
       <div className={s.docTitle}>{c.title}</div>
       <div className={s.docMeta}>
         <span className={s.avatar} style={{ background: "#f0663a" }}>
@@ -262,7 +301,7 @@ function DbScene({ run }: { run: boolean }) {
 
 function BoardScene({ run }: { run: boolean }) {
   const c = useCopy().boardScene;
-  const round = useReplay(9000, run);
+  const [round, ending] = useReplay(9000, run);
   const [seconds, setSeconds] = useState(300);
   useEffect(() => {
     if (!run) return;
@@ -271,7 +310,7 @@ function BoardScene({ run }: { run: boolean }) {
     return () => clearInterval(t);
   }, [run, round]);
   return (
-    <div className={s.wb} key={round} data-run={run}>
+    <div className={s.wb} key={round} data-run={run} data-ending={ending}>
       <div className={s.wbGrid} />
       <svg className={s.wbLinks} viewBox="0 0 400 260" aria-hidden="true">
         <path d="M118 78 C 170 78, 170 150, 222 150" />
@@ -336,9 +375,9 @@ function Pointer({ color }: { color: string }) {
 
 function JournalScene({ run }: { run: boolean }) {
   const c = useCopy().journalScene;
-  const round = useReplay(8000, run);
+  const [round, ending] = useReplay(8000, run);
   return (
-    <div className={s.jr} key={round} data-run={run}>
+    <div className={s.jr} key={round} data-run={run} data-ending={ending}>
       <div className={`${s.jrPage} ${s.jrFri}`}>
         <small>{c.yesterday}</small>
         <strong>{c.yesterdayDate}</strong>
@@ -378,9 +417,9 @@ function JournalScene({ run }: { run: boolean }) {
 
 function CollabScene({ run }: { run: boolean }) {
   const c = useCopy().collabScene;
-  const round = useReplay(9000, run);
+  const [round, ending] = useReplay(9000, run);
   return (
-    <div className={s.collab} key={round} data-run={run}>
+    <div className={s.collab} key={round} data-run={run} data-ending={ending}>
       <div className={s.collabDoc}>
         <div className={s.collabHead}>
           <span className={s.docTitleSmall}>{c.title}</span>
@@ -448,10 +487,17 @@ function CollabScene({ run }: { run: boolean }) {
 
 /* ---------- Hero window ---------- */
 
+// How long each hero screen stays: one pass of its scene (doc, database
+// with four layouts, whiteboard, journal), ending before it would replay.
+const HERO_DURATIONS = [10400, 10400, 8400, 7400];
+
 function HeroWindow() {
   const c = useCopy();
   const [ref, inView] = useInView<HTMLDivElement>();
-  const [active, setActive] = useCycle(TYPES.length, 3400, inView);
+  // Each screen stays until its scene has played once (shortly before it
+  // would replay); every visit starts it from the beginning.
+  const [active, setActive] = useSequence(HERO_DURATIONS, inView);
+  const starts = useStarts(active, TYPES.length);
   return (
     <div className={s.window} ref={ref} aria-hidden="true">
       <div className={s.windowBar}>
@@ -488,14 +534,7 @@ function HeroWindow() {
               className={s.screen}
               data-active={i === active}
             >
-              {t.key === "doc" && <DocScene run={inView && i === active} />}
-              {t.key === "db" && <DbScene run={inView && i === active} />}
-              {t.key === "board" && (
-                <BoardScene run={inView && i === active} />
-              )}
-              {t.key === "journal" && (
-                <JournalScene run={inView && i === active} />
-              )}
+              <SceneFor key={starts[i]} kind={t.key} run={inView && i === active} />
             </div>
           ))}
         </div>
@@ -510,6 +549,7 @@ function Tour() {
   const c = useCopy().tour;
   const [active, setActive] = useState(0);
   const [stageRef, stageInView] = useInView<HTMLDivElement>();
+  const starts = useStarts(active, TYPES.length);
   const steps = useRef<(HTMLElement | null)[]>([]);
   useEffect(() => {
     const io = new IntersectionObserver(
@@ -555,7 +595,7 @@ function Tour() {
                   ))}
                 </ul>
                 <div className={s.stepScene}>
-                  <SceneFor kind={key} run={i === active} />
+                  <SceneFor key={starts[i]} kind={key} run={i === active} />
                 </div>
               </article>
             );
@@ -569,7 +609,7 @@ function Tour() {
                 className={s.stageScene}
                 data-active={i === active}
               >
-                <SceneFor kind={key} run={stageInView && i === active} />
+                <SceneFor key={starts[i]} kind={key} run={stageInView && i === active} />
               </div>
             ))}
           </div>

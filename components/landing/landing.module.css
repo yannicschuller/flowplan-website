@@ -527,6 +527,26 @@
   height: 100%;
   min-height: 330px;
 }
+/* Replays fade out shortly before they restart and fade in again. */
+.doc,
+.jr,
+.wb,
+.collab,
+.db {
+  animation: sceneIn 0.45s var(--ease) both;
+  transition: opacity 0.45s var(--ease);
+}
+.doc[data-ending="true"],
+.jr[data-ending="true"],
+.wb[data-ending="true"],
+.collab[data-ending="true"] {
+  opacity: 0;
+}
+@keyframes sceneIn {
+  from {
+    opacity: 0;
+  }
+}
 .docTitle {
   font-size: 26px;
   font-weight: 650;
