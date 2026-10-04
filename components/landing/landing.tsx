@@ -61,6 +61,29 @@ const TYPES = [
   { key: "journal", icon: Notebook },
 ] as const;
 
+// The actions, always in this order: source code, demo, sign in, sign up
+// (the last one only while sign-up is open; then signing in is primary).
+function Ctas({ loginHref, registerHref, demoHref }: Pick<Props, "loginHref" | "registerHref" | "demoHref">) {
+  const c = useCopy();
+  return (
+    <>
+      <a className={s.secondaryLarge} href={GITHUB_URL} rel="noopener">
+        <GithubLogo size={18} /> GitHub
+      </a>
+      {demoHref && <DemoButton className={s.secondaryLarge} href={demoHref} />}
+      <a className={registerHref ? s.secondaryLarge : s.primaryLarge} href={loginHref}>
+        {c.header.login}
+        {!registerHref && <ArrowRight size={18} />}
+      </a>
+      {registerHref && (
+        <a className={s.primaryLarge} href={registerHref}>
+          {c.header.register} <ArrowRight size={18} />
+        </a>
+      )}
+    </>
+  );
+}
+
 /* ---------- Motion helpers ---------- */
 
 // Runs while the element is on screen; loops stop off screen.
@@ -715,8 +738,9 @@ export default function Landing({ loginHref, registerHref, demoHref, docsHref, t
         </nav>
         <div className={s.actions}>
           <LanguageSwitch className={s.lang} />
-          <a className={s.githubLink} href={GITHUB_URL} rel="noopener" aria-label={c.header.github} title={c.header.github}>
-            <GithubLogo size={20} />
+          <a className={s.githubLink} href={GITHUB_URL} rel="noopener" title={c.header.github}>
+            <GithubLogo size={18} />
+            <span>GitHub</span>
           </a>
           {demoHref && <DemoButton className={s.ghost} href={demoHref} short />}
           <a className={registerHref ? s.ghost : s.primary} href={loginHref}>
@@ -747,21 +771,7 @@ export default function Landing({ loginHref, registerHref, demoHref, docsHref, t
               {c.hero.text}
             </p>
             <div className={`${s.heroCtas} ${s.rise}`} style={{ "--d": 3 } as React.CSSProperties}>
-              {registerHref ? (
-                <>
-                  <a className={s.primaryLarge} href={registerHref}>
-                    {c.header.register} <ArrowRight size={18} />
-                  </a>
-                  <a className={s.secondaryLarge} href={loginHref}>
-                    {c.header.login}
-                  </a>
-                </>
-              ) : (
-                <a className={s.primaryLarge} href={loginHref}>
-                  {c.header.login} <ArrowRight size={18} />
-                </a>
-              )}
-              {demoHref && <DemoButton className={s.secondaryLarge} href={demoHref} />}
+              <Ctas loginHref={loginHref} registerHref={registerHref} demoHref={demoHref} />
             </div>
             <ul className={`${s.facts} ${s.rise}`} style={{ "--d": 4 } as React.CSSProperties}>
               {c.hero.facts.map((fact, i) => (
@@ -964,21 +974,7 @@ export default function Landing({ loginHref, registerHref, demoHref, docsHref, t
             <BrandMark size={56} />
             <h2>{c.final.title}</h2>
             <div className={s.heroCtas}>
-              {registerHref ? (
-                <>
-                  <a className={s.primaryLarge} href={registerHref}>
-                    {c.header.register} <ArrowRight size={18} />
-                  </a>
-                  <a className={s.secondaryLarge} href={loginHref}>
-                    {c.header.login}
-                  </a>
-                </>
-              ) : (
-                <a className={s.primaryLarge} href={loginHref}>
-                  {c.header.login} <ArrowRight size={18} />
-                </a>
-              )}
-              {demoHref && <DemoButton className={s.secondaryLarge} href={demoHref} />}
+              <Ctas loginHref={loginHref} registerHref={registerHref} demoHref={demoHref} />
             </div>
           </Reveal>
         </section>

@@ -366,9 +366,14 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
+  gap: 7px;
   height: 36px;
+  padding: 0 12px;
   border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-decoration: none;
   color: var(--secondary);
   transition:
     color 0.2s ease,
@@ -2041,8 +2046,12 @@
     transform: none;
   }
   .brand small,
-  .ghost {
+  .ghost,
+  .githubLink span {
     display: none;
+  }
+  .githubLink {
+    padding: 0 8px;
   }
   .header {
     gap: 12px;

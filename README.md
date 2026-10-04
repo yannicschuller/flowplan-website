@@ -13,7 +13,7 @@ APP_URL=http://127.0.0.1:3000 npm run dev
 
 | Variable | Default | Meaning |
 | --- | --- | --- |
-| `APP_URL` | `https://app.flowplan.org` | The Flowplan app: sign-in, sign-up and demo links; the start page asks its `/api/site-info` whether sign-up and the demo are open. |
+| `APP_URL` | `https://app.flowplan.org` | The Flowplan app: sign-in, sign-up and demo links. "Sign up" appears only while sign-up is open, "Try the demo" only while the public demo is on – both are switches in the app's administration (asked via `/api/site-info`; the demo is off by default). |
 | `DOCS_URL` | `https://docs.flowplan.org` | The documentation. |
 
 Old addresses of flowplan.org (`/share/…`, `/forms/…`, `/login`, `/docs/…`, `#page=…`) are forwarded to the app and the docs.
