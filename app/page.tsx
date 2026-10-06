@@ -1,6 +1,8 @@
 import Landing from "@/components/landing/landing";
 import { OldAppLinks } from "@/components/old-app-links";
 import { appUrl, docsUrl } from "@/lib/links";
+import { requestLocale } from "@/lib/i18n-server";
+import { jsonLd, structuredData } from "@/lib/seo";
 
 // Rendered per request: the app decides whether sign-ups and the demo are open.
 export const dynamic = "force-dynamic";
@@ -23,14 +25,16 @@ async function siteInfo(): Promise<SiteInfo> {
 export default async function Home() {
   const app = appUrl();
   const info = await siteInfo();
+  const locale = await requestLocale();
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(structuredData(locale))} />
       <OldAppLinks app={app} />
       <Landing
         loginHref={`${app}/login`}
         registerHref={info.signupOpen ? `${app}/register` : undefined}
         demoHref={info.demo ? `${app}/demo` : undefined}
-        docsHref={docsUrl()}
+        docsHref={`${docsUrl()}/${locale}`}
         templatesHref={`${app}/templates`}
       />
     </>
