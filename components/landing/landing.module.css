@@ -1385,7 +1385,7 @@
   padding: 0;
   margin: 56px 0 0;
   display: grid;
-  grid-template-columns: repeat(9, 1fr);
+  grid-template-columns: repeat(10, 1fr);
   gap: 12px;
 }
 .viewGrid li {
@@ -1982,7 +1982,7 @@
 /* ---------- Small screens ---------- */
 @media (max-width: 1080px) {
   .viewGrid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(5, 1fr);
   }
 }
 @media (max-width: 860px) {
@@ -2087,7 +2087,7 @@
     grid-template-columns: 1fr;
   }
   .viewGrid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 8px;
   }
   .viewGrid li span {

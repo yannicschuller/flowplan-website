@@ -25,6 +25,7 @@ import {
   GithubLogo,
   Cloud,
   HardDrives,
+  Flag,
 } from "@phosphor-icons/react";
 import { BrandMark } from "../brand-mark";
 import { LanguageSwitch, useLocale } from "../i18n";
@@ -656,7 +657,7 @@ function SceneFor({
 
 /* ---------- Views strip ---------- */
 
-const VIEW_ICONS = [Table, Kanban, CalendarBlank, ChartBarHorizontal, SquaresFour, List, Rows, ChartBar, ClipboardText];
+const VIEW_ICONS = [Table, Kanban, CalendarBlank, ChartBarHorizontal, SquaresFour, List, Rows, ChartBar, ClipboardText, Flag];
 const PLATFORM_ICONS = [Desktop, SquaresFour, Bell, ArrowsClockwise];
 
 /* ---------- Page ---------- */
