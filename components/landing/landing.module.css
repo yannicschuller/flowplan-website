@@ -527,6 +527,8 @@
 .doc,
 .jr,
 .wb,
+.pj,
+.sv,
 .collab {
   position: relative;
   height: 100%;
@@ -536,6 +538,8 @@
 .doc,
 .jr,
 .wb,
+.pj,
+.sv,
 .collab,
 .db {
   animation: sceneIn 0.45s var(--ease) both;
@@ -544,6 +548,8 @@
 .doc[data-ending="true"],
 .jr[data-ending="true"],
 .wb[data-ending="true"],
+.pj[data-ending="true"],
+.sv[data-ending="true"],
 .collab[data-ending="true"] {
   opacity: 0;
 }
@@ -1346,6 +1352,21 @@
 .stepScene {
   display: none;
 }
+/* Lists inside the scenes are part of the picture, not the step's bullets. */
+.step .stepScene li {
+  padding-left: 0;
+  font-size: inherit;
+  line-height: inherit;
+}
+.step .stepScene li::before {
+  display: none;
+}
+.step .stepScene .jr li {
+  font-size: 13.5px;
+}
+.step .stepScene .svResults li {
+  font-size: 11.5px;
+}
 .tourStage {
   position: relative;
 }
@@ -2100,6 +2121,356 @@
 }
 
 /* ---------- Reduced motion: final states, no loops ---------- */
+
+/* ---------- Projects scene ---------- */
+.pj {
+  display: grid;
+  grid-template-rows: auto auto;
+  align-content: start;
+  gap: 14px;
+}
+.pjBoard {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.pjCol {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-height: 150px;
+  padding: 10px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--text) 4%, transparent);
+}
+.pjCol header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.pjCard {
+  display: grid;
+  gap: 4px;
+  padding: 9px 10px;
+  border-radius: 9px;
+  background: var(--bg);
+  box-shadow: 0 0 0 1px var(--border), 0 8px 18px -14px #1d1a1440;
+  font-size: 12.5px;
+  line-height: 1.35;
+}
+.pjKey {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10.5px;
+  color: var(--blue);
+}
+.pjCol:nth-child(2) {
+  position: relative;
+}
+/* The card that moves: at home in "Done", it starts one column to the left. */
+.pjMoving {
+  animation: pjMove 0.75s var(--ease) 2.6s both;
+}
+@keyframes pjMove {
+  from {
+    transform: translateX(calc(-100% - 30px));
+  }
+}
+.pjCol:nth-child(2)::before {
+  content: "";
+  display: block;
+  height: 0;
+  animation: pjSlot 0.4s var(--ease) 2.9s both;
+}
+@keyframes pjSlot {
+  from {
+    height: 48px;
+  }
+}
+.pjWip {
+  position: relative;
+  display: inline-grid;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--signal) 16%, transparent);
+  color: var(--text);
+  font-size: 10.5px;
+  letter-spacing: 0;
+}
+.pjWip b {
+  grid-area: 1 / 1;
+  font-weight: 650;
+}
+.pjWipBefore {
+  opacity: 0;
+  animation: pjOut 0.3s ease 2.95s both;
+}
+@keyframes pjOut {
+  from {
+    opacity: 1;
+  }
+}
+.pjWipAfter {
+  animation: fadeIn 0.3s ease 3.05s both;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+}
+.pjCommit {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 8px;
+  border-radius: 7px;
+  background: var(--blue-light);
+  color: var(--blue);
+  font-size: 11px;
+  font-weight: 600;
+  animation: popIn 0.4s var(--spring) 1.5s both;
+}
+.pjBottom {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 12px;
+}
+.pjBurn {
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--bg);
+  box-shadow: 0 0 0 1px var(--border);
+}
+.pjBurn small {
+  font-size: 11px;
+  color: var(--muted);
+}
+.pjBurn svg {
+  width: 100%;
+  height: 56px;
+}
+.pjIdeal {
+  stroke: var(--muted);
+  stroke-width: 1.4;
+  stroke-dasharray: 4 4;
+}
+.pjActual {
+  fill: none;
+  stroke: var(--blue);
+  stroke-width: 2.4;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  animation: pjDraw 1.2s var(--ease) 3.8s both;
+}
+@keyframes pjDraw {
+  from {
+    opacity: 0;
+    clip-path: inset(0 100% 0 0);
+  }
+  30% {
+    opacity: 1;
+  }
+}
+.pjDot {
+  fill: var(--bg);
+  stroke: var(--blue);
+  stroke-width: 2;
+  animation: popIn 0.35s var(--spring) 5s both;
+}
+.pjToast {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 220px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  background: var(--text);
+  color: var(--bg);
+  font-size: 12px;
+  line-height: 1.35;
+  box-shadow: 0 14px 30px -16px #1d1a14aa;
+  animation: popIn 0.45s var(--spring) 3.5s both;
+}
+.pjToast svg {
+  flex-shrink: 0;
+  color: #f5c84b;
+}
+
+/* ---------- Survey scene ---------- */
+.sv {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  align-items: start;
+}
+.svCard {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--bg);
+  box-shadow: 0 0 0 1px var(--border), 0 12px 28px -18px #1d1a1440;
+}
+.svCard p {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+.svNps {
+  display: grid;
+  grid-template-columns: repeat(11, minmax(0, 1fr));
+  gap: 2px;
+  margin-bottom: 6px;
+}
+.svNps span {
+  display: grid;
+  place-items: center;
+  height: 24px;
+  border-radius: 5px;
+  box-shadow: inset 0 0 0 1px var(--border);
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+}
+.svPick {
+  background: var(--blue);
+  color: var(--on-accent, #fff);
+  animation: svPick 0.3s ease 0.8s both;
+}
+@keyframes svPick {
+  from {
+    background: transparent;
+    color: var(--text);
+  }
+}
+.svStars {
+  display: flex;
+  gap: 3px;
+  color: color-mix(in srgb, var(--text) 22%, transparent);
+}
+.svStarOn {
+  color: #d99a00;
+  animation: svStar 0.25s ease both;
+  animation-delay: calc(1.5s + var(--n) * 0.16s);
+}
+@keyframes svStar {
+  from {
+    color: color-mix(in srgb, var(--text) 22%, transparent);
+    transform: scale(0.8);
+  }
+}
+.svSend {
+  justify-self: start;
+  margin-top: 4px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: var(--blue);
+  color: var(--on-accent, #fff);
+  font-size: 12px;
+  font-weight: 600;
+  animation: svPress 0.3s ease 2.8s both;
+}
+@keyframes svPress {
+  50% {
+    transform: scale(0.94);
+  }
+}
+.svForm {
+  animation: fadeDim 0.6s ease 3.3s both;
+}
+.svResults {
+  animation: slideIn 0.7s var(--ease) 3.4s both;
+}
+.svResults small {
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--blue);
+}
+.svHero {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.svHero strong {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 30px;
+  line-height: 1;
+}
+.svHero span {
+  font-size: 11.5px;
+  color: var(--muted);
+}
+.svResults ul {
+  display: grid;
+  gap: 6px;
+  margin: 2px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.svResults li {
+  display: grid;
+  grid-template-columns: 74px minmax(0, 1fr) 34px;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+}
+.svResults li span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.svResults li i {
+  height: 8px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--text) 7%, transparent);
+  overflow: hidden;
+}
+.svResults li b {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background: var(--blue);
+  transform-origin: left;
+  animation: svGrow 0.8s var(--ease) both;
+  animation-delay: calc(4s + var(--i) * 0.15s);
+}
+@keyframes svGrow {
+  from {
+    transform: scaleX(0);
+  }
+}
+.svResults li em {
+  font-style: normal;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: var(--secondary);
+}
+.svAverage {
+  font-size: 11.5px;
+  color: var(--secondary);
+}
+@media (max-width: 560px) {
+  .sv {
+    grid-template-columns: 1fr;
+  }
+  .svForm {
+    display: none;
+  }
+  .pjBottom {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .root *,
   .root *::before,

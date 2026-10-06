@@ -28,7 +28,7 @@ const de = {
     eyebrow: "Dokumente · Datenbanken · Whiteboards · Journal",
     title: "Alles, woran ihr arbeitet.",
     titleEm: "Open Source – bei uns oder bei euch.",
-    text: "Dokumente, Datenbanken, Whiteboards und Journal in einem Seitenbaum – gemeinsam und live.",
+    text: "Dokumente, Datenbanken, Whiteboards, Journal, Projekte und Umfragen in einem Seitenbaum – gemeinsam und live.",
     facts: ["Open Source (AGPL)", "Server in Deutschland", "Selbst hostbar", "Kein Tracking"],
   },
   window: { team: "Team" },
@@ -37,6 +37,8 @@ const de = {
     db: { label: "Datenbanken", page: "Website-Relaunch" },
     board: { label: "Whiteboards", page: "Workshop Q4" },
     journal: { label: "Journal", page: "Mein Journal" },
+    projects: { label: "Projekte", page: "Sprint 14" },
+    survey: { label: "Umfragen", page: "Kundenumfrage" },
   },
   docScene: {
     title: "Projekt-Kickoff",
@@ -74,6 +76,27 @@ const de = {
     today: "Heute",
     todayDate: "Samstag, 17. Oktober",
   },
+  projectsScene: {
+    columns: ["Offen", "In Arbeit", "Erledigt"],
+    cards: ["Startseite gestalten", "Login reparieren", "Suche schneller machen", "Preise prüfen"],
+    commit: "fixes WEB-14 · Ada",
+    automation: "Automation: Erledigt am = heute",
+    sprint: "Sprint 14",
+    left: "noch 5 Punkte",
+  },
+  surveyScene: {
+    question: "Wie wahrscheinlich empfiehlst du uns weiter?",
+    stars: "Wie gefällt dir das neue Design?",
+    send: "Absenden",
+    results: "Ergebnisse",
+    answers: "128 Antworten",
+    bars: [
+      ["Dokumente", 62],
+      ["Datenbanken", 48],
+      ["Whiteboards", 31],
+    ] as [string, number][],
+    average: "Ø 4,3 Sterne",
+  },
   collabScene: {
     title: "Pressemitteilung",
     first: "Ab Montag gibt es die neue Website",
@@ -87,7 +110,7 @@ const de = {
     modes: ["Lesen", "Kommentieren", "Live bearbeiten"],
   },
   tour: {
-    eyebrow: "Vier Seitentypen, ein Seitenbaum",
+    eyebrow: "Ein Seitenbaum für alles",
     title: "Jede Idee bekommt die Form, die sie braucht.",
     steps: {
       doc: {
@@ -128,6 +151,26 @@ const de = {
           "Offene Aufgaben wandern automatisch in den neuen Tag",
           "Serie, Heatmap und „An diesem Tag“",
           "Wochen- und Monatsrückblick, auf Wunsch mit PIN",
+        ],
+      },
+      projects: {
+        title: "Projekte & Tickets",
+        lead: "Tickets mit Nummern, Sprints mit Burndown, Regeln, die Handgriffe übernehmen – nur wenn ihr sie einschaltet.",
+        points: [
+          "Ticketnummern wie WEB-123, Unteraufgaben und Epics",
+          "Automationen, Workflows und WIP-Limits im Board",
+          "Sprints, Zeiterfassung und Git-Commits am Eintrag",
+          "Import aus Jira und Trello",
+        ],
+      },
+      survey: {
+        title: "Umfragen",
+        lead: "Eine Umfrage wie bei SurveyMonkey, gebaut in wenigen Minuten – jede Antwort landet als Eintrag in der Datenbank.",
+        points: [
+          "19 Fragetypen: Sterne, NPS, Skalen, Matrix, Rangfolge …",
+          "Bedingungen, Seiten, Schlussdatum und Antwortlimit",
+          "Öffentlich teilen, Ergebnisse sofort ausgewertet",
+          "Dashboards mit Kennzahlen aus mehreren Datenbanken",
         ],
       },
     },
@@ -357,7 +400,7 @@ const en: LandingCopy = {
     eyebrow: "Documents · Databases · Whiteboards · Journal",
     title: "Everything you work on.",
     titleEm: "Open source – hosted by us or by you.",
-    text: "Documents, databases, whiteboards and a journal in one page tree – together and live.",
+    text: "Documents, databases, whiteboards, a journal, projects and surveys in one page tree – together and live.",
     facts: ["Open source (AGPL)", "Servers in Germany", "Self-hostable", "No tracking"],
   },
   window: { team: "Team" },
@@ -366,6 +409,8 @@ const en: LandingCopy = {
     db: { label: "Databases", page: "Website relaunch" },
     board: { label: "Whiteboards", page: "Workshop Q4" },
     journal: { label: "Journal", page: "My journal" },
+    projects: { label: "Projects", page: "Sprint 14" },
+    survey: { label: "Surveys", page: "Customer survey" },
   },
   docScene: {
     title: "Project kickoff",
@@ -403,6 +448,27 @@ const en: LandingCopy = {
     today: "Today",
     todayDate: "Saturday, 17 October",
   },
+  projectsScene: {
+    columns: ["Open", "In progress", "Done"],
+    cards: ["Design the start page", "Fix the login", "Make search faster", "Check prices"],
+    commit: "fixes WEB-14 · Ada",
+    automation: "Automation: Done on = today",
+    sprint: "Sprint 14",
+    left: "5 points left",
+  },
+  surveyScene: {
+    question: "How likely are you to recommend us?",
+    stars: "How do you like the new design?",
+    send: "Submit",
+    results: "Results",
+    answers: "128 answers",
+    bars: [
+      ["Documents", 62],
+      ["Databases", 48],
+      ["Whiteboards", 31],
+    ] as [string, number][],
+    average: "Avg. 4.3 stars",
+  },
   collabScene: {
     title: "Press release",
     first: "From Monday the new website is online",
@@ -416,7 +482,7 @@ const en: LandingCopy = {
     modes: ["View", "Comment", "Edit live"],
   },
   tour: {
-    eyebrow: "Four page types, one page tree",
+    eyebrow: "One page tree for everything",
     title: "Every idea gets the shape it needs.",
     steps: {
       doc: {
@@ -457,6 +523,26 @@ const en: LandingCopy = {
           "Open tasks move to the new day automatically",
           "Streak, heatmap and “on this day”",
           "Weekly and monthly review, optionally locked with a PIN",
+        ],
+      },
+      projects: {
+        title: "Projects & tickets",
+        lead: "Tickets with numbers, sprints with a burndown, rules that take over routine steps – only when you switch them on.",
+        points: [
+          "Ticket numbers like WEB-123, subtasks and epics",
+          "Automations, workflows and WIP limits on boards",
+          "Sprints, time tracking and Git commits on the record",
+          "Import from Jira and Trello",
+        ],
+      },
+      survey: {
+        title: "Surveys",
+        lead: "A survey like SurveyMonkey, built in minutes – every answer lands as a record in the database.",
+        points: [
+          "19 question types: stars, NPS, scales, matrix, ranking …",
+          "Conditions, pages, closing date and answer limit",
+          "Share publicly, results analysed right away",
+          "Dashboards with metrics from several databases",
         ],
       },
     },

@@ -26,6 +26,9 @@ import {
   Cloud,
   HardDrives,
   Flag,
+  GitBranch,
+  Lightning,
+  Star,
 } from "@phosphor-icons/react";
 import { BrandMark } from "../brand-mark";
 import { LanguageSwitch, useLocale } from "../i18n";
@@ -60,6 +63,8 @@ const TYPES = [
   { key: "db", icon: Table },
   { key: "board", icon: PresentationChart },
   { key: "journal", icon: Notebook },
+  { key: "projects", icon: Flag },
+  { key: "survey", icon: ClipboardText },
 ] as const;
 
 // The actions, always in this order: source code, demo, sign in, sign up
@@ -439,6 +444,107 @@ function JournalScene({ run }: { run: boolean }) {
   );
 }
 
+// Projects: a ticket board with a WIP limit; a commit "fixes WEB-14" moves
+// the card to Done, an automation sets the date, the burndown drops.
+function ProjectsScene({ run }: { run: boolean }) {
+  const c = useCopy().projectsScene;
+  const [round, ending] = useReplay(11000, run);
+  const card = (key: string, title: string, extra = "") => (
+    <div className={`${s.pjCard} ${extra}`}>
+      <span className={s.pjKey}>{key}</span>
+      {title}
+    </div>
+  );
+  return (
+    <div className={s.pj} key={round} data-run={run} data-ending={ending}>
+      <div className={s.pjBoard}>
+        <div className={s.pjCol}>
+          <header>{c.columns[0]}</header>
+          {card("WEB-17", c.cards[3])}
+          {card("WEB-11", c.cards[0])}
+        </div>
+        <div className={s.pjCol}>
+          <header>
+            {c.columns[1]}
+            <span className={s.pjWip}>
+              <b className={s.pjWipBefore}>2/3</b>
+              <b className={s.pjWipAfter}>1/3</b>
+            </span>
+          </header>
+          {card("WEB-12", c.cards[1])}
+          <div className={s.pjCommit}>
+            <GitBranch size={12} /> {c.commit}
+          </div>
+        </div>
+        <div className={s.pjCol}>
+          <header>{c.columns[2]}</header>
+          {card("WEB-14", c.cards[2], s.pjMoving)}
+        </div>
+      </div>
+      <div className={s.pjBottom}>
+        <div className={s.pjBurn}>
+          <small>
+            {c.sprint} · {c.left}
+          </small>
+          <svg viewBox="0 0 200 64" preserveAspectRatio="none" aria-hidden="true">
+            <line x1="4" y1="6" x2="196" y2="58" className={s.pjIdeal} vectorEffect="non-scaling-stroke" />
+            <polyline points="4,6 40,12 76,20 112,22 148,40" className={s.pjActual} vectorEffect="non-scaling-stroke" />
+          </svg>
+        </div>
+        <div className={s.pjToast}>
+          <Lightning size={14} weight="fill" /> {c.automation}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Surveys: someone answers (NPS, stars), the results come in.
+function SurveyScene({ run }: { run: boolean }) {
+  const c = useCopy().surveyScene;
+  const [round, ending] = useReplay(10000, run);
+  return (
+    <div className={s.sv} key={round} data-run={run} data-ending={ending}>
+      <div className={`${s.svCard} ${s.svForm}`}>
+        <p>{c.question}</p>
+        <div className={s.svNps}>
+          {Array.from({ length: 11 }, (_, n) => (
+            <span key={n} className={n === 9 ? s.svPick : undefined}>
+              {n}
+            </span>
+          ))}
+        </div>
+        <p>{c.stars}</p>
+        <div className={s.svStars}>
+          {[0, 1, 2, 3, 4].map((n) => (
+            <Star key={n} size={20} weight="fill" className={n < 4 ? s.svStarOn : undefined} style={{ "--n": n } as React.CSSProperties} />
+          ))}
+        </div>
+        <span className={s.svSend}>{c.send}</span>
+      </div>
+      <div className={`${s.svCard} ${s.svResults}`}>
+        <small>{c.results}</small>
+        <div className={s.svHero}>
+          <strong>+42</strong>
+          <span>NPS · {c.answers}</span>
+        </div>
+        <ul>
+          {c.bars.map(([label, share], i) => (
+            <li key={label}>
+              <span>{label}</span>
+              <i>
+                <b style={{ width: `${share}%`, "--i": i } as React.CSSProperties} />
+              </i>
+              <em>{share} %</em>
+            </li>
+          ))}
+        </ul>
+        <span className={s.svAverage}>{c.average}</span>
+      </div>
+    </div>
+  );
+}
+
 function CollabScene({ run }: { run: boolean }) {
   const c = useCopy().collabScene;
   const [round, ending] = useReplay(9000, run);
@@ -512,8 +618,9 @@ function CollabScene({ run }: { run: boolean }) {
 /* ---------- Hero window ---------- */
 
 // How long each hero screen stays: one pass of its scene (doc, database
-// with four layouts, whiteboard, journal), ending before it would replay.
-const HERO_DURATIONS = [10400, 10400, 8400, 7400];
+// with four layouts, whiteboard, journal, projects, survey), ending before
+// it would replay.
+const HERO_DURATIONS = [10400, 10400, 8400, 7400, 10400, 9400];
 
 function HeroWindow() {
   const c = useCopy();
@@ -652,6 +759,8 @@ function SceneFor({
   if (kind === "doc") return <DocScene run={run} />;
   if (kind === "db") return <DbScene run={run} />;
   if (kind === "board") return <BoardScene run={run} />;
+  if (kind === "projects") return <ProjectsScene run={run} />;
+  if (kind === "survey") return <SurveyScene run={run} />;
   return <JournalScene run={run} />;
 }
 
